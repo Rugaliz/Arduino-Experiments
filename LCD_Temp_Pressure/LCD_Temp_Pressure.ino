@@ -1,4 +1,8 @@
 #include <LiquidCrystal_I2C.h>
+
+// enter the I2C address and the dimensions of your LCD here
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_BMP280.h>
@@ -11,13 +15,18 @@
 Adafruit_BMP280 bmp; // I2C
 //Adafruit_BMP280 bmp(BMP_CS); // hardware SPI
 //Adafruit_BMP280 bmp(BMP_CS, BMP_MOSI, BMP_MISO,  BMP_SCK);
-// enter the I2C address and the dimensions of your LCD here
-LiquidCrystal_I2C lcd(0x27, 16, 2);
-// Remember to set correct I2C address in BMC280 header file 
-// And check which address for LCD I2C address
-
 
 void setup() {
+  lcd.init();
+  lcd.clear();         
+  lcd.backlight();      // Make sure backlight is on
+  
+  // Print a message on both lines of the LCD.
+  lcd.setCursor(0,0);   //Set cursor to character 2 on line 0
+  lcd.print("Temp & Pressure");
+  
+  lcd.setCursor(0,1);   //Move cursor to character 2 on line 1
+  lcd.print("Made by Rugaliz");
   Serial.begin(9600);
   while ( !Serial ) delay(100);   // wait for native usb
   Serial.println(F("BMP280 test"));
@@ -34,17 +43,15 @@ void setup() {
     Serial.print("        ID of 0x61 represents a BME 680.\n");
     while (1) delay(10);
   }
-
-  /* Default settings from datasheet. */
-  bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     /* Operating Mode. */
-                  Adafruit_BMP280::SAMPLING_X2,     /* Temp. oversampling */
-                  Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
-                  Adafruit_BMP280::FILTER_X16,      /* Filtering. */
-                  Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
-
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
+    delay(3000);
+    lcd.setCursor(0,0);   //Set cursor to character 2 on line 0
+    lcd.print("Temp = " + String(bmp.readTemperature()) + " ");
+    lcd.print((char)223);
+    lcd.print("C");
+    lcd.setCursor(0,1);   //Move cursor to character 2 on line 1
+    lcd.print("P = " + String(bmp.readPressure()) + " Pa");
+    
 }
